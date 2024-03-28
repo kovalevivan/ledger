@@ -1,55 +1,60 @@
 package org.example.service;
 
 import jakarta.inject.Inject;
-import org.example.dao.AccountBalanceDao;
+import org.example.dao.AccountDao;
+import org.example.dao.TransferDao;
+import org.example.domain.Account;
+import org.example.domain.Transfer;
 import org.example.dto.TransferRequestDto;
 import org.example.exception.InsufficientFundException;
 import org.example.exception.InvalidTransferException;
 
-import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.Lock;
 
 public class TransferService {
 
-    private static final Map<String, Lock> accountLocks = new ConcurrentHashMap<>();
-
-    private AccountBalanceDao accountBalanceDao;
+    private AccountDao accountBalanceDao;
+    private TransferDao transferDao;
 
     @Inject
-    public TransferService(AccountBalanceDao accountBalanceDao) {
+    public TransferService(AccountDao accountBalanceDao, TransferDao transferDao) {
         this.accountBalanceDao = accountBalanceDao;
+        this.transferDao = transferDao;
     }
 
-    public void transfer(TransferRequestDto transferRequestDto) {
+    public Transfer transfer(TransferRequestDto transferRequestDto) {
         validateRequest(transferRequestDto);
 
-        final var accountBalance = accountBalanceDao.getBalance(transferRequestDto.getAccountFrom());
+        final var accountFrom = accountBalanceDao.get(transferRequestDto.getAccountFrom())
+                .orElseThrow(() -> new InvalidTransferException("Account " + transferRequestDto.getAccountFrom() + " doesn't exist"));
+        final var accountTo = accountBalanceDao.get(transferRequestDto.getAccountTo())
+                .orElseThrow(() -> new InvalidTransferException("Account " + transferRequestDto.getAccountTo() + " doesn't exist"));
 
-        synchronized (accountBalance) {
-            if (accountBalance.get() < transferRequestDto.getAmount()) {
-                throw new InsufficientFundException(transferRequestDto.getAccountFrom());
-            }
+        synchronized (accountFrom) {
+            validateSufficientFunds(transferRequestDto, accountFrom);
+            final var transfer = transferDao.create(accountFrom.getId(), accountTo.getId(), transferRequestDto.getAmount());
 
-            accountBalanceDao.add(transferRequestDto.getAccountFrom(), -1 * transferRequestDto.getAmount());
-            accountBalanceDao.add(transferRequestDto.getAccountTo(), transferRequestDto.getAmount());
+            accountFrom.add(-1 * transferRequestDto.getAmount());
+            accountTo.add(transferRequestDto.getAmount());
+
+            transfer.complete();
+            return transfer;
         }
     }
 
     private void validateRequest(TransferRequestDto transferRequestDto) {
-        if(Objects.equals(transferRequestDto.getAccountFrom(), transferRequestDto.getAccountTo())) {
+        if (Objects.equals(transferRequestDto.getAccountFrom(), transferRequestDto.getAccountTo())) {
             throw new InvalidTransferException("accountFrom and accountTo can't be same");
-        }
-
-        if(!accountBalanceDao.isExist(transferRequestDto.getAccountFrom())) {
-            throw new InvalidTransferException("Account " + transferRequestDto.getAccountFrom() + " doesn't exist");
-        } else if(!accountBalanceDao.isExist(transferRequestDto.getAccountTo())) {
-            throw new InvalidTransferException("Account " + transferRequestDto.getAccountTo() + " doesn't exist");
         }
 
         if (transferRequestDto.getAmount() <= 0) {
             throw new InvalidTransferException("amount must be greater than 0");
+        }
+    }
+
+    private static void validateSufficientFunds(TransferRequestDto transferRequestDto, Account accountFrom) {
+        if (accountFrom.getBalance() < transferRequestDto.getAmount()) {
+            throw new InsufficientFundException(transferRequestDto.getAccountFrom());
         }
     }
 }

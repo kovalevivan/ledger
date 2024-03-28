@@ -1,8 +1,10 @@
 package org.example.exception;
 
+import java.util.UUID;
+
 public class InsufficientFundException extends RuntimeException{
 
-    public InsufficientFundException(String accountId) {
-        super("Insufficient funds: " +  accountId);
+    public InsufficientFundException(UUID accountId) {
+        super("Insufficient funds: " +  accountId.toString());
     }
 }

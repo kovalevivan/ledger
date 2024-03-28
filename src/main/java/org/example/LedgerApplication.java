@@ -5,7 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.example.dao.AccountBalanceDao;
+import org.example.dao.AccountDao;
+import org.example.dao.TransferDao;
 import org.example.resource.TransferResource;
 import org.example.service.TransferService;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -40,7 +41,8 @@ public class LedgerApplication {
             @Override
             protected void configure() {
                 bindAsContract(TransferService.class);
-                bindAsContract(AccountBalanceDao.class);
+                bindAsContract(AccountDao.class);
+                bindAsContract(TransferDao.class);
                 bindAsContract(ObjectMapper.class);
             }
         });

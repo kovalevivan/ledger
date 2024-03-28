@@ -1,28 +1,29 @@
 package org.example.dto;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class TransferRequestDto {
-    private final String accountFrom;
-    private final String accountTo;
-    private final Integer amount;
+    private final UUID accountFrom;
+    private final UUID accountTo;
+    private final Long amount;
 
-    public TransferRequestDto(String accountFrom, String accountTo, Integer amount) {
+    public TransferRequestDto(UUID accountFrom, UUID accountTo, Long amount) {
         this.accountFrom = Objects.requireNonNull(accountFrom, "accountFrom must not be null");
         this.accountTo = Objects.requireNonNull(accountTo, "accountTo must not be null");
         this.amount = Objects.requireNonNull(amount, "amount must not be null");
     }
 
-    public String getAccountFrom() {
+    public UUID getAccountFrom() {
         return accountFrom;
     }
 
-    public String getAccountTo() {
+    public UUID getAccountTo() {
         return accountTo;
     }
 
 
-    public Integer getAmount() {
+    public Long getAmount() {
         return amount;
     }
 

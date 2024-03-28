@@ -13,8 +13,8 @@ import java.util.HashMap;
 
 import static org.example.dto.ResponseDto.badRequest;
 import static org.example.dto.ResponseDto.ok;
-import static org.example.utils.MapperHelper.asInteger;
-import static org.example.utils.MapperHelper.asString;
+import static org.example.utils.MapperHelper.asLong;
+import static org.example.utils.MapperHelper.asUuid;
 
 @Path("transfer")
 public class TransferResource {
@@ -39,9 +39,9 @@ public class TransferResource {
     private TransferRequestDto toTransferRequestDto(String transferRequestString) throws JsonProcessingException {
         final var properties = objectMapper.readValue(transferRequestString, HashMap.class);
         return new TransferRequestDto(
-                asString(properties.get("accountFrom")),
-                asString(properties.get("accountTo")),
-                asInteger(properties.get("amount"))
+                asUuid(properties.get("accountFrom")),
+                asUuid(properties.get("accountTo")),
+                asLong(properties.get("amount"))
         );
     }
 

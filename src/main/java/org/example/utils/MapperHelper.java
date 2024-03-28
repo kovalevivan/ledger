@@ -1,14 +1,16 @@
 package org.example.utils;
 
+import java.util.UUID;
+
 public class MapperHelper {
 
-    public static String asString(Object object) {
-        if(object != null) return (String) object;
+    public static UUID asUuid(Object object) {
+        if(object != null) return UUID.fromString((String) object);
         return null;
     }
 
-    public static Integer asInteger(Object object) {
-        if(object != null) return (Integer) object;
+    public static Long asLong(Object object) {
+        if(object != null) return Long.valueOf((Integer) object);
         return null;
     }
 }
