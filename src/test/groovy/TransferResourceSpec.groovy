@@ -12,7 +12,7 @@ class TransferResourceSpec extends BaseSpecification implements AccountTestData{
 
     private HttpClient httpClient = HttpClient.newHttpClient()
 
-    def "should return exception message when accounts not existed"() {
+    def "should return ok when transfer money"() {
         given:
         def request = HttpRequest.newBuilder()
         .uri(new URI(TRANSFER_URL))
@@ -22,13 +22,13 @@ class TransferResourceSpec extends BaseSpecification implements AccountTestData{
             "accountTo": "%s",
             "amount": 100
         }
-        """, ACCOUNT_1.toString(), ACCOUNT_2.toString()))).build()
+        """, "902cc3fe-bcd2-4072-a069-d3688235f8bc", "dd5e091d-fc50-4d39-a958-8892873a6829"))).build()
 
         when:
         def response = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
 
         then:
-        response.body().contains(String.format("Account %s doesn't exist", ACCOUNT_1.toString()))
+        """{\n    "status": "OK",\n    "errorMessage":""\n}""" == response.body()
     }
 
     def "should return exception message when accountFrom not specified"() {

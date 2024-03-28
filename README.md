@@ -17,8 +17,7 @@ java -jar target/ledger-1.0-SNAPSHOT.jar
 
 This API don't have methods to manage account data so, I added initial test accounts.
 
-1. account: 111 balance: 100
-2. account: 222 balance: 100
-3. account: 333 balance: 100
+1. account: dd5e091d-fc50-4d39-a958-8892873a6829 balance: 100
+2. account: 902cc3fe-bcd2-4072-a069-d3688235f8bc balance: 100
 
 
