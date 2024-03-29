@@ -21,3 +21,9 @@ This API don't have methods to manage account data so, I added initial test acco
 2. account: 902cc3fe-bcd2-4072-a069-d3688235f8bc balance: 100
 
 
+## Tech stack
+
+1. Java 17
+2. Jersey 3.X
+3. Jetty 11.X
+4. Spock/Groovy/Junit 5
